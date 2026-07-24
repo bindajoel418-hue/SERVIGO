@@ -4,6 +4,7 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 
+import authRoutes from "./modules/auth";
 import { AppError } from "./common/errors/AppError";
 import { errorHandler } from "./common/middleware/errorHandler";
 
@@ -30,6 +31,8 @@ app.get("/api/v1/error", (_req, _res, next) => {
   next(new AppError(400, "Testing global error handler"));
 });
 
+
+app.use("/api/v1/auth", authRoutes);
 // Error handler MUST be last
 app.use(errorHandler);
 

@@ -7,28 +7,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
+enum UserRole {
   CUSTOMER
   PROVIDER
   ADMIN
 }
 
-enum UserStatus {
+enum AccountStatus {
+  PENDING
   ACTIVE
-  INACTIVE
   SUSPENDED
+  BANNED
 }
 
 model User {
-  id         String      @id @default(uuid())
-  firstName  String
-  lastName   String
-  email      String      @unique
-  phone      String      @unique
-  password   String
-  role       Role        @default(CUSTOMER)
-  status     UserStatus  @default(ACTIVE)
+  id            String        @id @default(cuid())
+  firstName     String
+  lastName      String
+  email         String        @unique
+  phone         String        @unique
+  password      String
 
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  role          UserRole      @default(CUSTOMER)
+  status        AccountStatus @default(PENDING)
+
+  emailVerified Boolean       @default(false)
+  phoneVerified Boolean       @default(false)
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  providerProfile ProviderProfile?
+}
+
+model ProviderProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+
+  bio         String?
+  experience  Int?
+  verified    Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
