@@ -19,4 +19,10 @@ export class AuthRepository {
       data,
     });
   }
+
+  async findUserByEmail(email: string) {
+    return prisma.user.findUnique({
+      where: { email },
+    });
+  }
 }
