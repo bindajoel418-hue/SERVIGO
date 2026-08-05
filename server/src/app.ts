@@ -4,9 +4,9 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 
-import authRoutes from "./modules/auth";
-import { AppError } from "./common/errors/AppError";
-import { errorHandler } from "./common/middleware/errorHandler";
+import authRoutes from "./modules/auth/auth.routes";
+import { AppError } from "./common/errors/AppError.js";
+import { errorHandler } from "./common/middleware/errorHandler.js";
 
 const app = express();
 

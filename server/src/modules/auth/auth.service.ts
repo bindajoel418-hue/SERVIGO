@@ -1,8 +1,11 @@
 import { AppError } from "../../common/errors/AppError";
-import { hashPassword } from "../../common/utils/password";
+import { comparePassword, hashPassword } from "../../common/utils/password";
 
 import { AuthRepository } from "./auth.repository";
 import { RegisterUserDto } from "./auth.types";
+import { comparePassword } from "../../common/utils/password";
+import { generateAccessToken } from "../../common/utils/jwt";
+import { LoginDto } from "./auth.types";
 
 export class AuthService {
   private repository = new AuthRepository();
@@ -31,4 +34,35 @@ export class AuthService {
 
     return safeUser;
   }
+
+  async login(data: LoginDto) {
+  const user = await this.repository.findUserByEmail(data.email);
+
+  if (!user) {
+    throw new AppError(401, "Invalid email or password");
+  }
+
+  const validPassword = await comparePassword(
+    data.password,
+    user.password
+  );
+
+  if (!validPassword) {
+    throw new AppError(401, "Invalid email or password");
+  }
+
+  const token = generateAccessToken({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+  });
+
+  const { password, ...safeUser } = user;
+
+  return {
+    user: safeUser,
+    accessToken: token,
+  };
 }
+}
+

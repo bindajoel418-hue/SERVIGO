@@ -1,17 +1,17 @@
 import { z } from "zod";
 
 export const registerSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  firstName: z.string().min(2),
+  lastName: z.string().min(2),
+  email: z.email(),
+  phone: z.string().min(9),
+  password: z.string().min(8),
+});
 
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
-
-  email: z.email("Invalid email address"),
-
-  phone: z.string().min(9, "Invalid phone number"),
-
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters"),
+export const loginSchema = z.object({
+  email: z.email(),
+  password: z.string().min(8),
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;

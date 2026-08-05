@@ -7,6 +7,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id              String           @id @default(cuid())
+  firstName       String
+  lastName        String
+  email           String           @unique
+  phone           String           @unique
+  password        String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  emailVerified   Boolean          @default(false)
+  phoneVerified   Boolean          @default(false)
+  role            UserRole         @default(CUSTOMER)
+  status          AccountStatus    @default(PENDING)
+  providerProfile ProviderProfile?
+}
+
+model ProviderProfile {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  bio        String?
+  experience Int?
+  verified   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 enum UserRole {
   CUSTOMER
   PROVIDER
@@ -18,38 +45,4 @@ enum AccountStatus {
   ACTIVE
   SUSPENDED
   BANNED
-}
-
-model User {
-  id            String        @id @default(cuid())
-  firstName     String
-  lastName      String
-  email         String        @unique
-  phone         String        @unique
-  password      String
-
-  role          UserRole      @default(CUSTOMER)
-  status        AccountStatus @default(PENDING)
-
-  emailVerified Boolean       @default(false)
-  phoneVerified Boolean       @default(false)
-
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-
-  providerProfile ProviderProfile?
-}
-
-model ProviderProfile {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-
-  bio         String?
-  experience  Int?
-  verified    Boolean  @default(false)
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
